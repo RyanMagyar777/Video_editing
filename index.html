@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ChromaEdit - A stunning, modern video color editor right in your browser.">
+    <title>ChromaEdit | Pro Video Color Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="ambient-background">
+        <div class="blob purple"></div>
+        <div class="blob blue"></div>
+        <div class="blob cyan"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar Controls -->
+        <aside class="controls-panel glass-panel hide-scrollbar">
+            <header class="app-header">
+                <h1 class="brand-title">Chroma<span class="highlight">Edit</span></h1>
+                <p class="brand-subtitle">Pro Video Color Grading</p>
+            </header>
+            
+            <div class="upload-section" id="drop-zone">
+                <input type="file" id="media-upload" accept="video/mp4, video/webm, video/quicktime, image/*" hidden>
+                <div class="upload-card" id="upload-btn">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span class="upload-text">Drop a video or photo here</span>
+                    <span class="upload-subtext">or click to browse</span>
+                </div>
+            </div>
+
+            <div class="filters-container">
+                <h3 class="section-title">Color Controls</h3>
+                
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="brightness">ពន្លឺ (Brightness / Exposure)</label>
+                        <span id="brightness-val" class="val-badge">100%</span>
+                    </div>
+                    <input type="range" id="brightness" data-unit="%" min="0" max="200" value="100" class="slider custom-slider">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="contrast">ភាពខុសគ្នា (Contrast)</label>
+                        <span id="contrast-val" class="val-badge">100%</span>
+                    </div>
+                    <input type="range" id="contrast" data-unit="%" min="0" max="200" value="100" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="saturation">កម្រិតពណ៌ (Saturation)</label>
+                        <span id="saturation-val" class="val-badge">100%</span>
+                    </div>
+                    <input type="range" id="saturation" data-unit="%" min="0" max="200" value="100" class="slider custom-slider">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="temperature">កែពណ៌ (Temperature / Tint)</label>
+                        <span id="temperature-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="temperature" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="highlights">លម្អិត (Highlights / Shadows)</label>
+                        <span id="highlights-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="highlights" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="grading">Style (Color Grading)</label>
+                        <span id="grading-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="grading" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="hue">ប្ដូរពណ៌ (Hue)</label>
+                        <span id="hue-val" class="val-badge">0deg</span>
+                    </div>
+                    <input type="range" id="hue" data-unit="deg" min="-180" max="180" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="vibrance">ពណ៌ smart (Vibrance)</label>
+                        <span id="vibrance-val" class="val-badge">100%</span>
+                    </div>
+                    <input type="range" id="vibrance" data-unit="%" min="0" max="200" value="100" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="whites">កំណត់ខ្លាំងចុងក្រោយ (Whites/Blacks)</label>
+                        <span id="whites-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="whites" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="gamma">midtone (Gamma)</label>
+                        <span id="gamma-val" class="val-badge">100</span>
+                    </div>
+                    <input type="range" id="gamma" data-unit="" min="0" max="200" value="100" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="hsl">កែពណ៌លម្អិត (HSL)</label>
+                        <span id="hsl-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="hsl" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="luts">style រហ័ស (LUTs)</label>
+                        <span id="luts-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="luts" data-unit="" min="0" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="curves">control ពន្លឺ Advanced (Curves)</label>
+                        <span id="curves-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="curves" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="color_balance">Color Balance</label>
+                        <span id="color_balance-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="color_balance" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="split_toning">Split Toning</label>
+                        <span id="split_toning-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="split_toning" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="rgb_channels">RGB Channels</label>
+                        <span id="rgb_channels-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="rgb_channels" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="selective_color">Selective Color</label>
+                        <span id="selective_color-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="selective_color" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="fade">Fade</label>
+                        <span id="fade-val" class="val-badge">0%</span>
+                    </div>
+                    <input type="range" id="fade" data-unit="%" min="0" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="dehaze">Dehaze</label>
+                        <span id="dehaze-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="dehaze" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="clarity">Clarity / Texture</label>
+                        <span id="clarity-val" class="val-badge">0</span>
+                    </div>
+                    <input type="range" id="clarity" data-unit="" min="-100" max="100" value="0" class="slider custom-slider">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label for="vignette">Vignette</label>
+                        <span id="vignette-val" class="val-badge">0%</span>
+                    </div>
+                    <input type="range" id="vignette" data-unit="%" min="0" max="100" value="0" class="slider custom-slider">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="reset-btn" class="btn secondary-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                    Reset All
+                </button>
+                <button id="export-btn" class="btn primary-btn disabled" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span id="export-btn-text">Export Video</span>
+                </button>
+            </div>
+            
+            <div id="export-status" class="status-msg hidden">
+                <div class="progress-bar"><div class="progress-fill" id="export-progress"></div></div>
+                <span id="export-text">Exporting... Please wait.</span>
+            </div>
+            
+        </aside>
+
+        <!-- Main Video Area -->
+        <main class="preview-panel glass-panel">
+            <div class="video-wrapper">
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-state-content">
+                        <div class="icon-ring">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path>
+                                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+                            </svg>
+                        </div>
+                        <h2>No Media Selected</h2>
+                        <p>Upload a video or photo from the sidebar to start editing</p>
+                    </div>
+                </div>
+                <video id="preview-video" class="hidden" controls playsinline controlslist="nodownload"></video>
+                <img id="preview-image" class="hidden" alt="Preview Image" />
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden canvas for rendering export -->
+    <canvas id="export-canvas" class="hidden"></canvas>
+    
+    <script src="script.js"></script>
+</body>
+</html>
