@@ -14,29 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportBtnText = document.getElementById('export-btn-text');
 
     // Sliders
-    const sliders = {
-        brightness: document.getElementById('brightness'),
-        contrast: document.getElementById('contrast'),
-        saturation: document.getElementById('saturation'),
-        temperature: document.getElementById('temperature'),
-        highlights: document.getElementById('highlights'),
-        grading: document.getElementById('grading'),
-        hue: document.getElementById('hue'),
-        vibrance: document.getElementById('vibrance'),
-        whites: document.getElementById('whites'),
-        gamma: document.getElementById('gamma'),
-        hsl: document.getElementById('hsl'),
-        luts: document.getElementById('luts'),
-        curves: document.getElementById('curves'),
-        color_balance: document.getElementById('color_balance'),
-        split_toning: document.getElementById('split_toning'),
-        rgb_channels: document.getElementById('rgb_channels'),
-        selective_color: document.getElementById('selective_color'),
-        fade: document.getElementById('fade'),
-        dehaze: document.getElementById('dehaze'),
-        clarity: document.getElementById('clarity'),
-        vignette: document.getElementById('vignette')
-    };
+const sliders = {
+    // existing...
+    red_gain: document.getElementById('red_gain'),
+    green_gain: document.getElementById('green_gain'),
+    blue_gain: document.getElementById('blue_gain'),
+
+    smear_r: document.getElementById('smear_r'),
+    smear_g: document.getElementById('smear_g'),
+    smear_b: document.getElementById('smear_b'),
+
+    smear_x: document.getElementById('smear_x'),
+    smear_y: document.getElementById('smear_y')
+};
 
     // State
     let videoURL = null;
@@ -44,29 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMediaType = null;
 
     // Default filters
-    const defaultFilters = {
-        brightness: '100',
-        contrast: '100',
-        saturation: '100',
-        temperature: '0',
-        highlights: '0',
-        grading: '0',
-        hue: '0',
-        vibrance: '100',
-        whites: '0',
-        gamma: '100',
-        hsl: '0',
-        luts: '0',
-        curves: '0',
-        color_balance: '0',
-        split_toning: '0',
-        rgb_channels: '0',
-        selective_color: '0',
-        fade: '0',
-        dehaze: '0',
-        clarity: '0',
-        vignette: '0'
-    };
+   const defaultFilters = {
+    // existing...
+    red_gain: '100',
+    green_gain: '100',
+    blue_gain: '100',
+
+    smear_r: '0',
+    smear_g: '0',
+    smear_b: '0',
+
+    smear_x: '0',
+    smear_y: '0'
+};
 
     // File Upload Handlers
     uploadBtn.addEventListener('click', () => fileInput.click());
@@ -170,26 +150,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyFilters() {
-        const filterStr = getFilterString();
-        if (currentMediaType === 'video') {
-            videoPreview.style.filter = filterStr;
-        } else if (currentMediaType === 'image') {
-            imagePreview.style.filter = filterStr;
-        }
+        function applyChromaSmear(ctx, width, height) {
+    const img = ctx.getImageData(0, 0, width, height);
+    const data = img.data;
 
-        // Update Vignette overlay
-        const vig = parseInt(sliders.vignette.value);
-        const wrapper = document.querySelector('.video-wrapper');
-        if (wrapper) {
-            wrapper.style.setProperty('--vignette-shadow', `inset 0 0 ${vig * 3}px rgba(0,0,0,${vig / 100})`);
-        }
+    const rGain = sliders.red_gain.value / 100;
+    const gGain = sliders.green_gain.value / 100;
+    const bGain = sliders.blue_gain.value / 100;
 
-        // Update labels
-        for (const [key, slider] of Object.entries(sliders)) {
-            const valEl = document.getElementById(`${key}-val`);
-            valEl.textContent = slider.value + slider.dataset.unit;
+    const smearR = parseInt(sliders.smear_r.value);
+    const smearG = parseInt(sliders.smear_g.value);
+    const smearB = parseInt(sliders.smear_b.value);
+
+    const smearX = parseInt(sliders.smear_x.value);
+    const smearY = parseInt(sliders.smear_y.value);
+
+    const copy = new Uint8ClampedArray(data);
+
+    function sample(x, y, channelOffset) {
+        x = Math.max(0, Math.min(width - 1, x));
+        y = Math.max(0, Math.min(height - 1, y));
+        return copy[(y * width + x) * 4 + channelOffset];
+    }
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+
+            const i = (y * width + x) * 4;
+
+            // directional offsets
+            let rx = x - smearX * smearR * 0.1;
+            let ry = y - smearY * smearR * 0.1;
+
+            let gx = x - smearX * smearG * 0.05;
+            let gy = y - smearY * smearG * 0.05;
+
+            let bx = x + smearX * smearB * 0.1;
+            let by = y + smearY * smearB * 0.1;
+
+            let r = sample(rx, ry, 0) * rGain;
+            let g = sample(gx, gy, 1) * gGain;
+            let b = sample(bx, by, 2) * bGain;
+
+            data[i]     = r;
+            data[i + 1] = g;
+            data[i + 2] = b;
         }
     }
+
+    ctx.putImageData(img, 0, 0);
+}
 
     // Add event listeners to all sliders
     Object.values(sliders).forEach(slider => {
@@ -303,14 +313,19 @@ document.addEventListener('DOMContentLoaded', () => {
             exportText.textContent = `Processing frame: ${pct}%`;
         };
 
-        const drawFrame = () => {
-            if (!videoPreview.paused && !videoPreview.ended) {
-                // Clear and draw the frame
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
-            }
-            drawInterval = requestAnimationFrame(drawFrame);
-        };
+       const drawFrame = () => {
+    if (!videoPreview.paused && !videoPreview.ended) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // base image
+        ctx.filter = getFilterString();
+        ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+
+        // chroma smear pass
+        applyChromaSmear(ctx, canvas.width, canvas.height);
+    }
+    drawInterval = requestAnimationFrame(drawFrame);
+};
 
         videoPreview.addEventListener('ended', handleVideoEnd);
         videoPreview.addEventListener('timeupdate', updateProgress);
